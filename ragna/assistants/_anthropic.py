@@ -10,6 +10,7 @@ from ._api import ApiAssistant
 
 class AnthropicApiAssistant(ApiAssistant):
     _API_KEY_ENV_VAR = "ANTHROPIC_API_KEY"
+    _API_BASE_URL = "https://api.anthropic.com/v1/complete"
     _MODEL: str
     _CONTEXT_SIZE: int
 
@@ -38,7 +39,7 @@ class AnthropicApiAssistant(ApiAssistant):
         async with httpx_sse.aconnect_sse(
             self._client,
             "POST",
-            "https://api.anthropic.com/v1/complete",
+            self._API_BASE_URL,
             headers={
                 "accept": "application/json",
                 "anthropic-version": "2023-06-01",

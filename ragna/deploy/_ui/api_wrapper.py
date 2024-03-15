@@ -73,6 +73,11 @@ class ApiWrapper(param.Parameterized):
             async for sse in event_source.aiter_sse():
                 yield self.improve_message(json.loads(sse.data))
 
+    async def icon(self, assistant):
+        assistant = '_'.join(assistant.split("/"))
+        json_data = (await self.client.get(f"/models/{assistant}/icon")).raise_for_status().json()
+        return json_data
+
     async def get_components(self):
         return (await self.client.get("/components")).raise_for_status().json()
 

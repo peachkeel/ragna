@@ -10,6 +10,8 @@ from ragna._compat import anext
 
 from . import styles as ui
 
+import base64
+
 # TODO : move all the CSS rules in a dedicated file
 
 message_stylesheets = [
@@ -87,6 +89,10 @@ class CopyToClipboardButton(ReactiveHTML):
 
                     """
     ]
+
+
+# I'd like to apologise to my family
+chat_avatar_lookup = {}
 
 
 class RagnaChatMessage(pn.chat.ChatMessage):
@@ -190,24 +196,10 @@ class RagnaChatMessage(pn.chat.ChatMessage):
             return "imgs/ragna_logo.svg"
         elif self.role == "user":
             return "👤"
-
-        try:
-            organization, model = user.split("/")
-        except ValueError:
-            organization = ""
-            model = user
-
-        if organization == "Ragna":
+        if user == 'Ragna/DemoAssistant':
             return "imgs/ragna_logo.svg"
-        elif organization == "OpenAI":
-            if model.startswith("gpt-3"):
-                return "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png?20230318122128"
-            elif model.startswith("gpt-4"):
-                return "https://upload.wikimedia.org/wikipedia/commons/a/a4/GPT-4.png"
-        elif organization == "Anthropic":
-            return "https://upload.wikimedia.org/wikipedia/commons/1/14/Anthropic.png"
-
-        return model[0].upper()
+        if user in chat_avatar_lookup.keys():
+            return chat_avatar_lookup[user]
 
 
 class RagnaChatInterface(pn.chat.ChatInterface):
@@ -251,6 +243,7 @@ class CentralView(pn.viewable.Viewer):
             stylesheets=[":host { margin-top:10px; }"],
         )
         self.on_click_chat_info = None
+
 
     def on_click_chat_info_wrapper(self, event):
         if self.on_click_chat_info is None:
@@ -356,6 +349,14 @@ class CentralView(pn.viewable.Viewer):
                 ),
             ],
         )
+
+    @param.depends("current_chat", watch=True)
+    async def update_chat_icon(self):
+        if self.current_chat['metadata']['assistant'] not in chat_avatar_lookup.keys():
+            icon_dict = await self.api_wrapper.icon(self.current_chat['metadata']['assistant'])
+            icon_dict = {list(icon_dict.keys())[0]: base64.b64decode(list(icon_dict.values())[0])}
+            print(icon_dict)
+            chat_avatar_lookup.update(icon_dict)
 
     def set_current_chat(self, chat):
         self.current_chat = chat

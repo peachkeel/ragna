@@ -214,6 +214,11 @@ class Assistant(Component, abc.ABC):
 
     @property
     @abc.abstractmethod
+    def icon(self):
+        ...
+
+    @property
+    @abc.abstractmethod
     def max_input_size(self) -> int:
         ...
 

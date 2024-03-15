@@ -232,6 +232,9 @@ class Chat:
 
         return answer
 
+    def icon(self):
+        return {"b64-icon": self.assistant.icon()}
+
     def _parse_documents(self, documents: Iterable[Any]) -> list[Document]:
         documents_ = []
         for document in documents:

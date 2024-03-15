@@ -7,13 +7,28 @@ import httpx
 import ragna
 from ragna.core import Assistant, EnvVarRequirement, Requirement, Source
 
-
+from bs4 import BeautifulSoup
+import re
+import requests
+import base64
 class ApiAssistant(Assistant):
     _API_KEY_ENV_VAR: str
-
+    _API_BASE_URL: str
     @classmethod
     def requirements(cls) -> list[Requirement]:
         return [EnvVarRequirement(cls._API_KEY_ENV_VAR)]
+
+    def icon(self) -> bytes:
+        # Who even needs regex
+        url = "https://" + ".".join([url for url in self._API_BASE_URL.split('/') if '.' in url][0].split('.')[1:])
+        page = requests.get(url)
+        soup = BeautifulSoup(page.text, features="lxml")
+
+        # It's me, I need regex
+        icons = soup.find_all('link', attrs={'rel': re.compile("^(shortcut icon|icon)$", re.I)})
+        file = requests.get(url + icons[0].get('href'))
+        return base64.b64encode(file.content)
+
 
     def __init__(self) -> None:
         self._client = httpx.AsyncClient(
