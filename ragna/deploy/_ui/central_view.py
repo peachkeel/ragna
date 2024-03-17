@@ -228,6 +228,8 @@ class RagnaChatInterface(pn.chat.ChatInterface):
 class CentralView(pn.viewable.Viewer):
     current_chat = param.ClassSelector(class_=dict, default=None)
 
+    flag = param.ClassSelector(class_=bool, default=False)
+
     def __init__(self, api_wrapper, **params):
         super().__init__(**params)
 
@@ -243,7 +245,6 @@ class CentralView(pn.viewable.Viewer):
             stylesheets=[":host { margin-top:10px; }"],
         )
         self.on_click_chat_info = None
-
 
     def on_click_chat_info_wrapper(self, event):
         if self.on_click_chat_info is None:
@@ -350,13 +351,18 @@ class CentralView(pn.viewable.Viewer):
             ],
         )
 
-    @param.depends("current_chat", watch=True)
+    @param.depends("current_chat",watch=True)
     async def update_chat_icon(self):
+        if self.current_chat is None:
+            return
         if self.current_chat['metadata']['assistant'] not in chat_avatar_lookup.keys():
+            print("Updating Chat Icons")
             icon_dict = await self.api_wrapper.icon(self.current_chat['metadata']['assistant'])
             icon_dict = {list(icon_dict.keys())[0]: base64.b64decode(list(icon_dict.values())[0])}
             print(icon_dict)
             chat_avatar_lookup.update(icon_dict)
+        print(self.flag, not self.flag)
+        self.flag = not self.flag
 
     def set_current_chat(self, chat):
         self.current_chat = chat
@@ -400,10 +406,14 @@ class CentralView(pn.viewable.Viewer):
                 user=self.get_user_from_role("system"),
             )
 
-    @pn.depends("current_chat")
+    @pn.depends("flag")
     def chat_interface(self):
         if self.current_chat is None:
+            print("Current chat none")
             return
+
+        print(self.current_chat)
+        print("Setting Central View")
 
         return RagnaChatInterface(
             *[
