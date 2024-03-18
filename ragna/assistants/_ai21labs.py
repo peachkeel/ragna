@@ -7,6 +7,7 @@ from ._api import ApiAssistant
 
 class Ai21LabsAssistant(ApiAssistant):
     _API_KEY_ENV_VAR = "AI21_API_KEY"
+    _API_BASE_URL = 'https://api.ai21.com/studio/v1/j2-'
     _MODEL_TYPE: str
     _CONTEXT_SIZE: int = 8_192
     # See https://docs.ai21.com/docs/model-availability-across-platforms#ai21-studio
@@ -34,7 +35,7 @@ class Ai21LabsAssistant(ApiAssistant):
         # See https://docs.ai21.com/reference/j2-complete-api-ref#api-parameters
         # See https://docs.ai21.com/reference/j2-chat-api#understanding-the-response
         response = await self._client.post(
-            f"https://api.ai21.com/studio/v1/j2-{self._MODEL_TYPE}/chat",
+            f"{self._API_BASE_URL}{self._MODEL_TYPE}/chat",
             headers={
                 "accept": "application/json",
                 "content-type": "application/json",

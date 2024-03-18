@@ -10,6 +10,7 @@ from ._api import ApiAssistant
 
 class OpenaiApiAssistant(ApiAssistant):
     _API_KEY_ENV_VAR = "OPENAI_API_KEY"
+    _API_BASE_URL = "https://api.openai.com/v1/chat/completions"
     _MODEL: str
     _CONTEXT_SIZE: int
 
@@ -38,7 +39,7 @@ class OpenaiApiAssistant(ApiAssistant):
         async with httpx_sse.aconnect_sse(
             self._client,
             "POST",
-            "https://api.openai.com/v1/chat/completions",
+            self._API_BASE_URL,
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self._api_key}",

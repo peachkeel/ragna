@@ -8,6 +8,7 @@ from ._api import ApiAssistant
 
 class CohereApiAssistant(ApiAssistant):
     _API_KEY_ENV_VAR = "COHERE_API_KEY"
+    _API_BASE_URL = "https://api.cohere.ai/v1/chat"
     _MODEL: str
     _CONTEXT_SIZE: int = 4_000
     # See https://docs.cohere.com/docs/models#command
@@ -38,7 +39,7 @@ class CohereApiAssistant(ApiAssistant):
         # See https://docs.cohere.com/docs/retrieval-augmented-generation-rag
         async with self._client.stream(
             "POST",
-            "https://api.cohere.ai/v1/chat",
+            self._API_KEY_ENV_VAR + f"",
             headers={
                 "accept": "application/json",
                 "content-type": "application/json",

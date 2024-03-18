@@ -27,6 +27,7 @@ class AsyncIteratorReader:
 
 class GoogleApiAssistant(ApiAssistant):
     _API_KEY_ENV_VAR = "GOOGLE_API_KEY"
+    _API_BASE_URL = "https://www.google.com/favicon.ico"
     _MODEL: str
     _CONTEXT_SIZE: int
 

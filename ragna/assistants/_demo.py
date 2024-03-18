@@ -27,8 +27,7 @@ class RagnaDemoAssistant(Assistant):
         return "Ragna/DemoAssistant"
 
     def icon(self):
-
-        return base64.b64encode(open("ragna/deploy/_ui/imgs/ragna_logo.svg",'rb').read())
+        return base64.b64encode(open("ragna/deploy/_ui/imgs/ragna_logo.svg", 'rb').read())
 
     @property
     def max_input_size(self) -> int:

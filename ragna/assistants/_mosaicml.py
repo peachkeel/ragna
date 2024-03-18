@@ -7,6 +7,7 @@ from ._api import ApiAssistant
 
 class MosaicmlApiAssistant(ApiAssistant):
     _API_KEY_ENV_VAR = "MOSAICML_API_KEY"
+    _API_BASE_URL = "https://www.mosaicml.com"
     _MODEL: str
     _CONTEXT_SIZE: int
 
