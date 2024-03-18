@@ -347,6 +347,7 @@ class CentralView(pn.viewable.Viewer):
             ],
         )
 
+    # TODO: Actual system error messages will still be broken
     def update_chat_icon(self):
         if self.current_chat is None:
             return
@@ -360,7 +361,7 @@ class CentralView(pn.viewable.Viewer):
 
     def get_user_from_role(self, role: Literal["system", "user", "assistant"]) -> str:
         if role == "system":
-            return cast(str, self.current_chat["metadata"]["assistant"])
+            return "Ragna"
         elif role == "user":
             return cast(str, self.user)
         elif role == "assistant":

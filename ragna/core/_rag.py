@@ -193,7 +193,7 @@ class Chat:
 
         welcome = Message(
             content="How can I help you with the documents?",
-            role=MessageRole.SYSTEM,
+            role=MessageRole.ASSISTANT,
         )
         self._messages.append(welcome)
         return welcome
