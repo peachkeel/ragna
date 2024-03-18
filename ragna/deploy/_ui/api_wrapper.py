@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 
 import emoji
+from urllib import request
 import httpx
 import httpx_sse
 import param
@@ -19,6 +20,7 @@ class ApiWrapper(param.Parameterized):
 
     def __init__(self, api_url, **params):
         self.client = httpx.AsyncClient(base_url=api_url, timeout=60)
+        self.api_url = api_url
 
         super().__init__(**params)
 
@@ -73,9 +75,11 @@ class ApiWrapper(param.Parameterized):
             async for sse in event_source.aiter_sse():
                 yield self.improve_message(json.loads(sse.data))
 
-    async def icon(self, assistant):
+    def icon(self, assistant):
         assistant = '_'.join(assistant.split("/"))
-        json_data = (await self.client.get(f"/models/{assistant}/icon")).raise_for_status().json()
+        url = self.api_url + f"/models/{assistant}/icon"
+        response = request.urlopen(url)
+        json_data = json.loads(response.read().decode('utf-8'))
         return json_data
 
     async def get_components(self):

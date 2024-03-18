@@ -259,7 +259,6 @@ def app(*, config: Config, ignore_unavailable_components: bool) -> FastAPI:
     async def icon(model: str):
         model = '/'.join(model.split('_'))
         core_chat = cast(type(Assistant), get_component(model))
-        print(core_chat.icon())
         return {model: core_chat.icon()}
 
     @app.post("/chats/{id}/answer")
