@@ -103,11 +103,16 @@ class Embedding:
 
 class GenericEmbeddingModel(Component, ABC):
     _EMBEDDING_DIMENSIONS: int
+    _MAX_SEQUENCE_LENGTH: int
+
+    def get_max_sequence_length(self) -> int:
+        return self._MAX_SEQUENCE_LENGTH
 
     @abstractmethod
     def embed_chunks(self, chunks: list[Chunk]) -> list[Embedding]:
         ...
 
+    @abstractmethod
     def embed_text(self, text: str) -> list[float]:
         ...
 

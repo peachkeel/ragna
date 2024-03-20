@@ -203,7 +203,7 @@ class Chat:
             # Here we need to generate the list of embeddings
             chunks = []
             for document in self.documents:
-                chunks += self.source_storage._chunk_pages(document.extract_pages(), document_id=document.id, chunk_size=500, chunk_overlap=250)
+                chunks += self.source_storage._chunk_pages(document.extract_pages(), document_id=document.id, chunk_size=self.embedding_model.get_max_sequence_length(), chunk_overlap=int(self.embedding_model.get_max_sequence_length()/2))
             embeddings = self.embedding_model.embed_chunks(chunks)
             await self._run(self.source_storage.store, embeddings)
 
