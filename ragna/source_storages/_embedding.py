@@ -89,11 +89,6 @@ class M2Bert80M32KRetrievalTogether(GenericEmbeddingModel):
         import requests
         self.session = requests.Session()
 
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            "bert-base-uncased",
-            model_max_length=self._MAX_SEQUENCE_LENGTH
-        )
-
     def embed_chunks(self, chunks: list[Chunk]) -> list[Embedding]:
         texts = [chunk.text for chunk in chunks]
         embedding_floats = self.embed_text(texts)
@@ -101,12 +96,13 @@ class M2Bert80M32KRetrievalTogether(GenericEmbeddingModel):
         embeddings = [Embedding(item[0], item[1]) for item in embeddings_list]
         return embeddings
 
-    def get_tokenizer(self):
-        return self.tokenizer
-
     def embed_text(self, text: Union[List[str],str]) -> list[float]:
 
         embeddings = []
+
+        if type(text) == str:
+            text = [text]
+
         import tqdm
         for batch in tqdm.tqdm(batch_text(text, threshold=16000)):
             response = self.session.post(
