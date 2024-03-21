@@ -2,9 +2,11 @@ import itertools
 from collections import deque
 from uuid import UUID
 from typing import (
+    Callable,
     Deque,
     Iterable,
     Iterator,
+    List,
     Optional,
     TypeVar,
     cast,
@@ -14,6 +16,7 @@ from ragna._compat import itertools_pairwise
 from ragna.core import (
     PackageRequirement,
     Chunk,
+    GenericEmbeddingModel,
     Page,
     Requirement,
     Source,

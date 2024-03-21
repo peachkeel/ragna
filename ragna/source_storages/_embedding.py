@@ -26,8 +26,8 @@ def batch_text(text: list[str], threshold: int):
             batches[-1].append(text_piece)
         else:
             batches.append([text_piece])
-
     return batches
+
 
 class M2Bert80M32KRetrievalLocal(GenericEmbeddingModel):
     _MAX_SEQUENCE_LENGTH = 32768
@@ -58,15 +58,16 @@ class M2Bert80M32KRetrievalLocal(GenericEmbeddingModel):
         embeddings = []
 
         import tqdm
-        for batch in tqdm.tqdm(batch_text(text, threshold=16000)):
+        for single_text in tqdm.tqdm(text):
             input_ids = self.tokenizer(
-                batch,
+                single_text,
                 return_tensors="pt",
                 padding="longest",
                 return_token_type_ids=False,
                 truncation=True,
                 max_length=self._MAX_SEQUENCE_LENGTH
             )
+            print(len(max(input_ids.data['input_ids'].tolist(), key=len)))
             outputs = self.model(**input_ids)
             embeddings += outputs['sentence_embedding'].tolist()
         return embeddings
@@ -78,6 +79,7 @@ class M2Bert80M32KRetrievalTogether(GenericEmbeddingModel):
     model_api_string = 'togethercomputer/m2-bert-80M-32k-retrieval'
     def __init__(self):
         import os
+        from transformers import AutoTokenizer
         api_key = os.getenv("TOGETHER_API_KEY")
         self.headers = {
             "accept": "application/json",
@@ -87,12 +89,20 @@ class M2Bert80M32KRetrievalTogether(GenericEmbeddingModel):
         import requests
         self.session = requests.Session()
 
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            "bert-base-uncased",
+            model_max_length=self._MAX_SEQUENCE_LENGTH
+        )
+
     def embed_chunks(self, chunks: list[Chunk]) -> list[Embedding]:
         texts = [chunk.text for chunk in chunks]
         embedding_floats = self.embed_text(texts)
         embeddings_list = zip(embedding_floats, chunks)
         embeddings = [Embedding(item[0], item[1]) for item in embeddings_list]
         return embeddings
+
+    def get_tokenizer(self):
+        return self.tokenizer
 
     def embed_text(self, text: Union[List[str],str]) -> list[float]:
 

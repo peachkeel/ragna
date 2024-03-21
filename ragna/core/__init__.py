@@ -7,6 +7,7 @@ __all__ = [
     "DocumentHandler",
     "DocumentUploadParameters",
     "DocxDocumentHandler",
+    "GenericEmbeddingModel",
     "PptxDocumentHandler",
     "EnvVarRequirement",
     "LocalDocument",
@@ -54,6 +55,7 @@ from ._components import (
     MessageRole,
     Source,
     SourceStorage,
+    GenericEmbeddingModel,
 )
 
 # isort: split
