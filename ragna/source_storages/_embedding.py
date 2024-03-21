@@ -17,76 +17,23 @@ class MiniLML6v2(GenericEmbeddingModel):
         return self.model.encode(text).tolist()
 
 
-def batch_text(text: list[str], threshold: int):
-    batches = [[text[0]]]
-    text.pop(0)
-
-    for text_piece in text:
-        if max([len(max(batches[-1], key=len)), len(text_piece)]) * (len(batches[-1]) + 1) < threshold:
-            batches[-1].append(text_piece)
-        else:
-            batches.append([text_piece])
-    return batches
-
-
-class M2Bert80M32KRetrievalLocal(GenericEmbeddingModel):
+class TogetherEmbeddingModel(GenericEmbeddingModel):
     _MAX_SEQUENCE_LENGTH = 32768
+    _MODEL_API_STRING: str
 
-    def __init__(self):
-        from transformers import AutoTokenizer, AutoModelForSequenceClassification
-        self.model = AutoModelForSequenceClassification.from_pretrained(
-            "togethercomputer/m2-bert-80M-32k-retrieval",
-            trust_remote_code=True
-        )
-
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            "bert-base-uncased",
-            model_max_length=self._MAX_SEQUENCE_LENGTH
-        )
-
-    def embed_chunks(self, chunks: list[Chunk]) -> list[Embedding]:
-        texts = [chunk.text for chunk in chunks]
-        embedding_floats = self.embed_text(texts)
-        embeddings_list = zip(embedding_floats, chunks)
-        embeddings = [Embedding(item[0], item[1]) for item in embeddings_list]
-        return embeddings
-
-    def embed_text(self, text: Union[str, List[str]]) -> list[float]:
-        if type(text) is not list:
-            text = [text]
-
-        embeddings = []
-
-        import tqdm
-        for single_text in tqdm.tqdm(text):
-            input_ids = self.tokenizer(
-                single_text,
-                return_tensors="pt",
-                padding="longest",
-                return_token_type_ids=False,
-                truncation=True,
-                max_length=self._MAX_SEQUENCE_LENGTH
-            )
-            print(len(max(input_ids.data['input_ids'].tolist(), key=len)))
-            outputs = self.model(**input_ids)
-            embeddings += outputs['sentence_embedding'].tolist()
-        return embeddings
-
-
-class M2Bert80M32KRetrievalTogether(GenericEmbeddingModel):
-    _MAX_SEQUENCE_LENGTH = 32768
-    url = "https://api.together.xyz/api/v1/embeddings"
-    model_api_string = 'togethercomputer/m2-bert-80M-32k-retrieval'
     def __init__(self):
         import os
-        from transformers import AutoTokenizer
+        import requests
+
         api_key = os.getenv("TOGETHER_API_KEY")
         self.headers = {
             "accept": "application/json",
             "content-type": "application/json",
             "Authorization": f"Bearer {api_key}"
         }
-        import requests
+        self.url = "https://api.together.xyz/api/v1/embeddings"
+        self.model_api_string = self._MODEL_API_STRING
+
         self.session = requests.Session()
 
     def embed_chunks(self, chunks: list[Chunk]) -> list[Embedding]:
@@ -104,12 +51,12 @@ class M2Bert80M32KRetrievalTogether(GenericEmbeddingModel):
             text = [text]
 
         import tqdm
-        for batch in tqdm.tqdm(batch_text(text, threshold=16000)):
+        for single_text in tqdm.tqdm(text):
             response = self.session.post(
                 self.url,
                 headers=self.headers,
                 json={
-                    "input": batch,
+                    "input": single_text,
                     "model": self.model_api_string
                 }
             )
@@ -118,3 +65,18 @@ class M2Bert80M32KRetrievalTogether(GenericEmbeddingModel):
 
             embeddings += [item['embedding'] for item in response.json()['data']]
         return embeddings
+
+
+class M2Bert80M32KRetrievalTogether(TogetherEmbeddingModel):
+    _MAX_SEQUENCE_LENGTH = 32768
+    _MODEL_API_STRING = 'togethercomputer/m2-bert-80M-32k-retrieval'
+
+
+class M2Bert80M8KRetrievalTogether(TogetherEmbeddingModel):
+    _MAX_SEQUENCE_LENGTH = 8192
+    _MODEL_API_STRING = 'togethercomputer/m2-bert-80M-8k-retrieval'
+
+
+class M2Bert80M2KRetrievalTogether(TogetherEmbeddingModel):
+    _MAX_SEQUENCE_LENGTH = 2048
+    _MODEL_API_STRING = 'togethercomputer/m2-bert-80M-2k-retrieval'

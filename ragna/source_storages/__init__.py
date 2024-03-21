@@ -4,7 +4,8 @@ __all__ = [
     "RagnaDemoSourceStorage",
     "MiniLML6v2",
     "M2Bert80M32KRetrievalTogether",
-    "M2Bert80M32KRetrievalLocal",
+    "M2Bert80M8KRetrievalTogether",
+    "M2Bert80M2KRetrievalTogether",
     "VectorDatabaseSourceStorage",
 ]
 
@@ -12,7 +13,7 @@ from ._vector_database import VectorDatabaseSourceStorage
 from ._chroma import Chroma
 from ._demo import RagnaDemoSourceStorage
 from ._lancedb import LanceDB
-from ._embedding import MiniLML6v2, M2Bert80M32KRetrievalTogether, M2Bert80M32KRetrievalLocal
+from ._embedding import MiniLML6v2, M2Bert80M32KRetrievalTogether, M2Bert80M8KRetrievalTogether, M2Bert80M2KRetrievalTogether
 
 # isort: split
 
