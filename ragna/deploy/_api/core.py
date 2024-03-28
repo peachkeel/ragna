@@ -17,6 +17,9 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+import logging
+
+
 import ragna
 import ragna.core
 from ragna._compat import aiter, anext
