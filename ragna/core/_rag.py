@@ -219,7 +219,7 @@ class Chat:
 
     def _embed_text(self, text: str) -> list[float]:
         dummy_chunk = Chunk(text=text, document_id=uuid.uuid4(), page_numbers=[], num_tokens=0)
-        return cast(EmbeddingModel, self.embedding_model).embed_chunks([dummy_chunk])[0].embedding
+        return cast(EmbeddingModel, self.embedding_model)([dummy_chunk])[0].values
 
     def _chunk_pages(
         self,
@@ -279,7 +279,7 @@ class Chat:
 
         input: Union[list[Document], list[Embedding]] = self.documents
         if not issubclass(self.source_storage.__ragna_input_type__, Document):
-            input = cast(EmbeddingModel, self.embedding_model).embed_chunks(chunks)
+            input = cast(EmbeddingModel, self.embedding_model)(chunks)
         await self._run(self.source_storage.store, input)
 
         self._prepared = True

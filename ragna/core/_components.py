@@ -98,9 +98,9 @@ class Embedding:
     chunk: Chunk
 
 
-class EmbeddingModel(Component, ABC):
+class EmbeddingFunction(Component, ABC):
     @abstractmethod
-    def embed_chunks(self, documents: list[Chunk]) -> list[Embedding]:
+    def __call__(self, documents: list[Chunk]) -> list[Embedding]:
         ...
 
 

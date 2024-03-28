@@ -29,7 +29,7 @@ class AllMiniLML6v2(EmbeddingModel):
 
         self._model = embedding_functions.ONNXMiniLM_L6_V2()
 
-    def embed_chunks(self, chunks: list[Chunk]) -> list[Embedding]:
+    def __call__(self, chunks: list[Chunk]) -> list[Embedding]:
         return [
             Embedding(values=self._embed_text(chunk.text), chunk=chunk)
             for chunk in chunks
