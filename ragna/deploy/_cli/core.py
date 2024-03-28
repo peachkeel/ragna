@@ -94,6 +94,7 @@ def api(
         ),
         host=config.api.hostname,
         port=config.api.port,
+        log_config='ragna/deploy/_api/log_conf.yml'
     )
 
 
