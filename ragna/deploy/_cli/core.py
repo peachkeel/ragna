@@ -89,8 +89,8 @@ def api(
     ] = False,
 ) -> None:
     log_config = uvicorn.config.LOGGING_CONFIG
-    log_config["formatters"]["access"]["fmt"] = "%(args)s - %(levelname)s [%(asctime)s] %(message)s"
-    log_config["formatters"]["default"]["fmt"] = "%(args)s - %(levelname)s [%(asctime)s] %(message)s"
+    log_config["formatters"]["access"]["fmt"] = "[%(asctime)s] "+log_config["formatters"]["access"]["fmt"]
+    log_config["formatters"]["default"]["fmt"] = "[%(asctime)s] " + log_config["formatters"]["default"]["fmt"]
     log_config["formatters"]["access"]["datefmt"] = "%d/%b/%Y:%H:%M:%S %z"
     log_config["formatters"]["default"]["datefmt"] = "%d/%b/%Y:%H:%M:%S %z"
     uvicorn.run(
