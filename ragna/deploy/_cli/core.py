@@ -88,13 +88,18 @@ def api(
         ),
     ] = False,
 ) -> None:
+    log_config = uvicorn.config.LOGGING_CONFIG
+    log_config["formatters"]["access"]["fmt"] = "%(args)s - %(levelname)s [%(asctime)s] %(message)s"
+    log_config["formatters"]["default"]["fmt"] = "%(args)s - %(levelname)s [%(asctime)s] %(message)s"
+    log_config["formatters"]["access"]["datefmt"] = "%d/%b/%Y:%H:%M:%S %z"
+    log_config["formatters"]["default"]["datefmt"] = "%d/%b/%Y:%H:%M:%S %z"
     uvicorn.run(
         api_app(
             config=config, ignore_unavailable_components=ignore_unavailable_components
         ),
         host=config.api.hostname,
         port=config.api.port,
-        log_config='ragna/deploy/_api/log_conf.yml'
+        log_config=log_config
     )
 
 
